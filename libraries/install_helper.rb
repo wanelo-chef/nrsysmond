@@ -5,9 +5,9 @@ module Nrsysmond
     include Chef::Mixin::ShellOut
 
     def pkgin_installed?
-      cmd = shell_out('pkgin search nrsysmond | grep ^nrsysmond | grep =')
+      cmd = shell_out('pkgin search nrsysmond | grep ^nrsysmond | grep "=\|<"')
       return false unless cmd.exitstatus.zero?
-      !cmd.stdout.include?(node['nrsysmond']['pkg']['version'])
+      !cmd.stdout.include?("%s =" % node['nrsysmond']['pkg']['version'])
     end
 
     def process_group
