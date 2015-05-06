@@ -20,14 +20,20 @@ template '/opt/local/etc/nrsysmond.cfg' do
   notifies :restart, 'service[nrsysmond]'
 end
 
-package 'nrsysmond' do
-  action :remove
-  only_if { helper.pkgin_installed? }
-end
+if helper.use_pkgin?
+  package 'nrsysmond' do
+    version helper.latest_pkgin_version.to_s
+  end
+else
+  package 'nrsysmond' do
+    action :remove
+    only_if { helper.pkgin_installed? }
+  end
 
-execute 'install nrsysmond' do
-  command 'pkg_add -f %s' % node['nrsysmond']['pkg']['url']
-  not_if 'pkgin list | grep ^nrsysmond | grep %s' % node['nrsysmond']['pkg']['version']
+  execute 'install nrsysmond' do
+    command 'pkg_add -f %s' % node['nrsysmond']['pkg']['url']
+    not_if 'pkgin list | grep ^nrsysmond | grep %s' % node['nrsysmond']['pkg']['version']
+  end
 end
 
 service 'nrsysmond'
