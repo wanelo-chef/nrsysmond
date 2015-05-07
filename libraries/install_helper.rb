@@ -15,6 +15,7 @@ module Nrsysmond
     end
 
     def use_pkgin?
+      return false unless latest_pkgin_version
       latest_pkgin_version > ::Chef::Version.new(versionify_version(min_nrsysmond_version))
     end
 
