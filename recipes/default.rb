@@ -25,8 +25,8 @@ if helper.use_pkgin?
     version helper.latest_pkgin_version.to_s
   end
 else
-  package 'nrsysmond' do
-    action :remove
+  execute 'remove old nrsysmond' do
+    command 'pkg_delete nrsysmond'
     only_if { helper.remove_old_version? }
   end
 

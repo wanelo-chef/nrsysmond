@@ -11,7 +11,7 @@ module Nrsysmond
     end
 
     def already_installed?
-      cmd = shell_out('pkgin list | grep ^nrsysmond | cut -d" " -f1 | cut -d";" -f1 | cut -d"-" -f2-')
+      cmd = shell_out('pkg_info | grep ^nrsysmond | cut -d" " -f1 | cut -d";" -f1 | cut -d"-" -f2-', returns: [0, 1])
       return false unless cmd.exitstatus.zero?
       version = cmd.stdout.chomp
       return false if version.empty?
@@ -19,7 +19,7 @@ module Nrsysmond
     end
 
     def remove_old_version?
-      cmd = shell_out('pkgin list | grep ^nrsysmond | cut -d" " -f1 | cut -d";" -f1 | cut -d"-" -f2-')
+      cmd = shell_out('pkg_info | grep ^nrsysmond | cut -d" " -f1 | cut -d";" -f1 | cut -d"-" -f2-', returns: [0, 1])
       return false unless cmd.exitstatus.zero?
       version = cmd.stdout.chomp
       return false if version.empty?
