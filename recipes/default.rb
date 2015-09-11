@@ -27,12 +27,12 @@ if helper.use_pkgin?
 else
   package 'nrsysmond' do
     action :remove
-    only_if { helper.pkgin_installed? }
+    only_if { helper.remove_old_version? }
   end
 
   execute 'install nrsysmond' do
-    command 'pkg_add -f %s' % node['nrsysmond']['pkg']['url']
-    not_if 'pkgin list | grep ^nrsysmond | grep %s' % node['nrsysmond']['pkg']['version']
+    command 'pkg_add -f %s' % helper.pkg_url
+    not_if  { helper.already_installed? }
   end
 end
 

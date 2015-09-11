@@ -4,10 +4,26 @@ module Nrsysmond
   class InstallHelper < Struct.new(:node)
     include Chef::Mixin::ShellOut
 
-    def pkgin_installed?
-      cmd = shell_out('pkgin search nrsysmond | grep ^nrsysmond | grep "=\|<"')
+    def pkg_url
+      use_unsigned_package? ?
+        '%s/unsigned/nrsysmond-%s.tgz' % [node['nrsysmond']['pkg']['url'], min_nrsysmond_version] :
+        '%s/nrsysmond-%s.tgz' % [node['nrsysmond']['pkg']['url'], min_nrsysmond_version]
+    end
+
+    def already_installed?
+      cmd = shell_out('pkgin list | grep ^nrsysmond | cut -d" " -f1 | cut -d"-" -f2-')
       return false unless cmd.exitstatus.zero?
-      !cmd.stdout.include?("%s =" % min_nrsysmond_version)
+      version = cmd.stdout.chomp
+      return false if version.empty?
+      ::Chef::Version.new(versionify_version(version)) == ::Chef::Version.new(versionify_version(min_nrsysmond_version))
+    end
+
+    def remove_old_version?
+      cmd = shell_out('pkgin list | grep ^nrsysmond | cut -d" " -f1 | cut -d"-" -f2-')
+      return false unless cmd.exitstatus.zero?
+      version = cmd.stdout.chomp
+      return false if version.empty?
+      ::Chef::Version.new(versionify_version(cmd.stdout.chomp)) < ::Chef::Version.new(versionify_version(min_nrsysmond_version))
     end
 
     def process_group
@@ -39,6 +55,12 @@ module Nrsysmond
 
     def versionify_version(version)
       version.split('.')[0..2].join('.')
+    end
+
+    private
+
+    def use_unsigned_package?
+      shell_out('grep VERIFIED_INSTALLATION=trusted /opt/local/etc/pkg_install.conf').error?
     end
   end
 end

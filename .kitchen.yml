@@ -21,6 +21,17 @@ platforms:
       image: 5c7d0d24-3475-11e5-8e67-27953a8b237e
   provisioner:
     chef_omnibus_url: https://raw.githubusercontent.com/wanelo-chef/chef-bootstrap/master/standalone.sh
+- name: smartos-unsigned
+  driver_config:
+    box: livinginthepast/smartos-base64
+    box_url: https://atlas.hashicorp.com/livinginthepast/boxes/smartos-base64
+    vagrantfile_erb: test/templates/Vagrantfile.smartos.erb
+    zone:
+      name: base64
+      brand: joyent
+      image: 62f148f8-6e84-11e4-82c5-efca60348b9f
+  provisioner:
+    chef_omnibus_url: https://raw.githubusercontent.com/wanelo-chef/chef-bootstrap/master/standalone.sh
 
 suites:
   - name: default
