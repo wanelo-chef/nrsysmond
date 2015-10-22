@@ -60,7 +60,7 @@ module Nrsysmond
     private
 
     def use_unsigned_package?
-      shell_out('grep VERIFIED_INSTALLATION=trusted /opt/local/etc/pkg_install.conf').error?
+      shell_out(%(grep 'VERIFIED_INSTALLATION=\\(trusted\\|always\\)' /opt/local/etc/pkg_install.conf)).error?
     rescue
       true
     end
